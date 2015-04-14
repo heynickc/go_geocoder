@@ -19,7 +19,7 @@ type Geocoder struct {
 	httpUrl *url.URL
 }
 
-func New() *Geocoder {
+func NewGeocoder() *Geocoder {
 
 	u := new(url.URL)
 
@@ -52,7 +52,7 @@ func (m *Geocoder) Geocode(url string) {
 
 func main() {
 
-	gc := New()
+	gc := NewGeocoder()
 
 	gc.Geocode(gc.httpUrl.String())
 }
