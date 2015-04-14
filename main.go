@@ -1,19 +1,11 @@
 package main
 
 import (
-	"github.com/gorilla/http"
+	"io/ioutil"
 	"log"
+	"net/http"
 	"net/url"
-	"os"
 )
-
-type Address struct {
-	street, city, state, zip string
-}
-
-func (a *Address) SingleLine() string {
-	return a.street + " " + a.city + "," + a.state + " " + a.zip
-}
 
 type Geocoder struct {
 	URL *url.URL
@@ -44,15 +36,23 @@ func NewGeocoder() *Geocoder {
 	return &Geocoder{u}
 }
 
-func (m *Geocoder) Geocode(url string) {
-	if _, err := http.Get(os.Stdout, url); err != nil {
-		log.Fatalf("unable to fetch %q: %v", os.Args[1], err)
+func (g *Geocoder) Geocode() []byte {
+
+	res, err := http.Get(g.URL.String())
+	if err != nil {
+		log.Fatalf("Unable to get %q: %v", g.URL.String(), err)
 	}
+
+	data, err := ioutil.ReadAll(res.Body)
+	res.Body.Close()
+
+	if err != nil {
+		log.Fatalf("Error parsing response body: %v", err)
+	}
+
+	return data
 }
 
 func main() {
 
-	gc := NewGeocoder()
-
-	gc.Geocode(gc.URL.String())
 }

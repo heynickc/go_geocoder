@@ -1,6 +1,8 @@
 package main
 
 import (
+	geocoder "github.com/heynickc/go_mdimapgeocoder"
+	"io/ioutil"
 	"log"
 	"net/url"
 	"testing"
@@ -92,4 +94,11 @@ func TestUrlBuilderSingleLine(t *testing.T) {
 	if u.String() != expected {
 		t.Errorf("Expected %v, but got %v", u.String(), expected)
 	}
+}
+
+func TestGeocoder(t *testing.T) {
+
+	gc := geocoder.NewGeocoder()
+
+	ioutil.WriteFile("./my_address.json", gc.Geocode(), 0644)
 }
