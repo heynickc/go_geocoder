@@ -16,7 +16,7 @@ func (a *Address) SingleLine() string {
 }
 
 type Geocoder struct {
-	httpUrl *url.URL
+	URL *url.URL
 }
 
 func NewGeocoder() *Geocoder {
@@ -54,5 +54,5 @@ func main() {
 
 	gc := NewGeocoder()
 
-	gc.Geocode(gc.httpUrl.String())
+	gc.Geocode(gc.URL.String())
 }
