@@ -5,6 +5,19 @@ import (
 	"io"
 )
 
+type SpatialReference struct {
+	SpatialReference Wkid
+}
+
+type Wkid struct {
+	Wkid       int
+	LatestWkid int
+}
+
+type Candidates struct {
+	Candidates []*Address
+}
+
 type Address struct {
 	Address  string
 	Location Location
