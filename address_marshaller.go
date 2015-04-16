@@ -6,14 +6,14 @@ import (
 )
 
 type Address struct {
-	address  string
-	location Location
-	score    float32
+	Address  string
+	Location Location
+	Score    float32
 }
 
 type Location struct {
-	x float32
-	y float32
+	X float32
+	Y float32
 }
 
 type AddressMarshaler interface {
