@@ -15,7 +15,7 @@ type Wkid struct {
 }
 
 type Candidates struct {
-	Candidates []Address
+	Candidates []*Address
 }
 
 type Address struct {

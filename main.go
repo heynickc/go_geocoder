@@ -7,7 +7,7 @@ import (
 
 func main() {
 
-	addresses, err := readDataFile("my_address.json")
+	addresses, err := readAddressDataFile("my_address.json")
 
 	if err != nil {
 		log.Fatalln("Failed to read:", err)

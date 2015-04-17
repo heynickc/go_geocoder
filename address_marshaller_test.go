@@ -2,7 +2,6 @@ package main
 
 import (
 	"encoding/json"
-	"fmt"
 	"io"
 	"log"
 	"reflect"
@@ -22,7 +21,7 @@ func TestJSONDecoding(t *testing.T) {
 		} else if err != nil {
 			log.Fatal(err)
 		}
-		fmt.Println(reflect.TypeOf(a))
+		equals(t, "main.Address", reflect.TypeOf(a).String())
 	}
 }
 
@@ -38,8 +37,8 @@ func TestJSONArrayDecoding(t *testing.T) {
 		} else if err != nil {
 			log.Fatal(err)
 		}
-		fmt.Println(reflect.TypeOf(c))
-		fmt.Println(len(c.Candidates))
+		equals(t, "main.Candidates", reflect.TypeOf(c).String())
+		equals(t, 10, len(c.Candidates))
 	}
 }
 
@@ -55,9 +54,9 @@ func TestJSONWkid(t *testing.T) {
 		} else if err != nil {
 			log.Fatal(err)
 		}
-		fmt.Println(reflect.TypeOf(c))
-		fmt.Println(c.Wkid)
-		fmt.Println(c.LatestWkid)
+		equals(t, "main.Wkid", reflect.TypeOf(c).String())
+		equals(t, 4326, c.Wkid)
+		equals(t, 4326, c.LatestWkid)
 	}
 }
 
@@ -73,9 +72,9 @@ func TestJSONSpatialReference(t *testing.T) {
 		} else if err != nil {
 			log.Fatal(err)
 		}
-		fmt.Println(reflect.TypeOf(c))
-		fmt.Println(c.SpatialReference.Wkid)
-		fmt.Println(c.SpatialReference.LatestWkid)
+		equals(t, "main.SpatialReference", reflect.TypeOf(c).String())
+		equals(t, 4326, c.SpatialReference.Wkid)
+		equals(t, 4326, c.SpatialReference.LatestWkid)
 	}
 }
 
@@ -85,8 +84,13 @@ func TestJSONFullPayload(t *testing.T) {
 
 	decoder := json.NewDecoder(strings.NewReader(jsonStream))
 	var c Candidates
-	if err := decoder.Decode(&c); err != nil {
-		fmt.Println(reflect.TypeOf(c))
-		fmt.Println(len(c.Candidates))
+	for {
+		if err := decoder.Decode(&c); err == io.EOF {
+			break
+		} else if err != nil {
+			log.Fatal(err)
+		}
+		equals(t, "main.Candidates", reflect.TypeOf(c).String())
+		equals(t, 10, len(c.Candidates))
 	}
 }
