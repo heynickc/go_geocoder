@@ -15,7 +15,7 @@ type Wkid struct {
 }
 
 type Candidates struct {
-	Candidates []*Address
+	Candidates []Address
 }
 
 type Address struct {
@@ -30,27 +30,26 @@ type Location struct {
 }
 
 type AddressMarshaler interface {
-	MarshalAddresses(writer io.Writer, addresses []*Address) error
+	MarshalAddresses(writer io.Writer, candidates Candidates) error
 }
 
 type AddressUnmarshaler interface {
-	UnmarshalAddresses(reader io.Reader) ([]*Address, error)
+	UnmarshalAddresses(reader io.Reader) (*Candidates, error)
 }
 
 type JSONMarshaler struct{}
 
 func (JSONMarshaler) MarshalAddresses(writer io.Writer,
-	addresses []*Address) error {
+	candidates Candidates) error {
 	encoder := json.NewEncoder(writer)
-	return encoder.Encode(addresses)
+	return encoder.Encode(candidates)
 }
 
-func (JSONMarshaler) UnmarshalAddresses(reader io.Reader) ([]*Address,
-	error) {
+func (JSONMarshaler) UnmarshalAddresses(reader io.Reader) (*Candidates, error) {
 	decoder := json.NewDecoder(reader)
-	var addresses []*Address
-	if err := decoder.Decode(&addresses); err != nil {
+	var candidates *Candidates
+	if err := decoder.Decode(&candidates); err != nil {
 		return nil, err
 	}
-	return addresses, nil
+	return candidates, nil
 }

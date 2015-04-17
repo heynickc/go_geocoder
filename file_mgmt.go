@@ -7,7 +7,7 @@ import (
 	"path/filepath"
 )
 
-func readDataFile(filename string) ([]*Address, error) {
+func readDataFile(filename string) (*Candidates, error) {
 	file, closer, err := openDataFile(filename)
 	if closer != nil {
 		defer closer()
@@ -28,7 +28,7 @@ func openDataFile(filename string) (io.ReadCloser, func(), error) {
 	return reader, closer, nil
 }
 
-func readData(reader io.Reader, suffix string) ([]*Address, error) {
+func readData(reader io.Reader, suffix string) (*Candidates, error) {
 	var unmarshaler AddressUnmarshaler
 	switch suffix {
 	// case ".gob":
