@@ -3,6 +3,8 @@ package main
 import (
 	"encoding/csv"
 	"fmt"
+	"io/ioutil"
+	"os"
 	"sort"
 	"strings"
 	"testing"
@@ -17,7 +19,7 @@ SSO,City of Baltimore,N/A,1/1/2005,8:16:00 PM,0,2,0,5300 Falls Rd,21209,,,Pataps
 	data, err := reader.ReadAll()
 
 	ok(t, err)
-	fmt.Println(data[0][0])
+	equals(t, "Overflow Type", data[0][0])
 }
 
 func TestGetCSVAddressHeaders(t *testing.T) {
@@ -34,6 +36,18 @@ SSO,City of Baltimore,N/A,1/1/2005,8:16:00 PM,0,2,0,5300 Falls Rd,21209,,,Pataps
 
 	ok(t, err)
 
-	fmt.Println(streetIndex)
-	fmt.Println(zipIndex)
+	equals(t, 13, streetIndex)
+	equals(t, 21, zipIndex)
+}
+
+func TestOpenCSVFile(t *testing.T) {
+	file, err := os.Open("./my_data.csv")
+	ok(t, err)
+
+	defer file.Close()
+
+	data, err := ioutil.ReadAll(file)
+	ok(t, err)
+
+	fmt.Println(string(data))
 }
