@@ -107,9 +107,6 @@ SSO,City of Baltimore,N/A,1/18/2005,10:00:00 AM,0,1,0,4600 Franklintown Rd,21216
 
 	reader := csv.NewReader(strings.NewReader(csvStream))
 	reader.FieldsPerRecord = 22
-
-	reader.Read()
-
 }
 
 func TestUnmarshalInRecords(t *testing.T) {
@@ -125,7 +122,28 @@ func TestUnmarshalInRecords(t *testing.T) {
 	data, err := UnmarshalInRecords(reader)
 	ok(t, err)
 
-	for _, v := range data {
-		fmt.Println(*v)
+	equals(t, 3758, len(data))
+}
+
+func TestGeocodeInRecords(t *testing.T) {
+	file, err := os.Open("./sso_db_raw.csv")
+	ok(t, err)
+
+	defer file.Close()
+
+	reader := csv.NewReader(file)
+	ok(t, err)
+
+	// data, err := reader.Read()
+	data, err := UnmarshalInRecords(reader)
+	ok(t, err)
+
+	gc := NewGeocoder()
+	for i := 0; i < 10; i++ {
+		gc.SetUrlValues(data[i])
+
+		fmt.Println(data[i])
+		fmt.Println(string(gc.Geocode()) + "\n")
 	}
+
 }

@@ -21,7 +21,7 @@ func NewGeocoder() *Geocoder {
 
 	v := url.Values{
 		"Street":       []string{"507 S Pinehurst Ave"},
-		"City":         []string{"Salisbury"},
+		"City":         []string{""},
 		"State":        []string{"Maryland"},
 		"ZIP":          []string{"21801"},
 		"SingleLine":   []string{""},
@@ -36,7 +36,17 @@ func NewGeocoder() *Geocoder {
 	return &Geocoder{u}
 }
 
-func (g *Geocoder) Geocode() []byte {
+func (g *Geocoder) SetUrlValues(address *InRecord) {
+
+	oldQuery := g.URL.Query()
+
+	oldQuery.Set("Street", address.Address)
+	oldQuery.Set("ZIP", address.Zip)
+
+	g.URL.RawQuery = oldQuery.Encode()
+}
+
+func (g Geocoder) Geocode() []byte {
 
 	res, err := http.Get(g.URL.String())
 	if err != nil {
@@ -45,10 +55,8 @@ func (g *Geocoder) Geocode() []byte {
 
 	data, err := ioutil.ReadAll(res.Body)
 	res.Body.Close()
-
 	if err != nil {
 		log.Fatalf("Error parsing response body: %v", err)
 	}
-
 	return data
 }
