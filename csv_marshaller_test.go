@@ -126,6 +126,8 @@ func TestUnmarshalInRecords(t *testing.T) {
 }
 
 func TestGeocodeInRecords(t *testing.T) {
+	t.Skip()
+
 	file, err := os.Open("./sso_db_raw.csv")
 	ok(t, err)
 
@@ -134,16 +136,12 @@ func TestGeocodeInRecords(t *testing.T) {
 	reader := csv.NewReader(file)
 	ok(t, err)
 
-	// data, err := reader.Read()
 	data, err := UnmarshalInRecords(reader)
 	ok(t, err)
 
 	gc := NewGeocoder()
-	for i := 0; i < 10; i++ {
+	for i := 0; i < 50; i++ {
 		gc.SetUrlValues(data[i])
-
-		fmt.Println(data[i])
-		fmt.Println(string(gc.Geocode()) + "\n")
+		fmt.Print(string(gc.Geocode()) + ",")
 	}
-
 }
