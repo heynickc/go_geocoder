@@ -2,8 +2,10 @@ package main
 
 import (
 	"encoding/json"
+	"fmt"
 	"io"
 	"sort"
+	"strings"
 )
 
 type SpatialReference struct {
@@ -52,6 +54,7 @@ func (JSONMarshaler) UnmarshalAddresses(reader io.Reader) (*Candidates, error) {
 	if err := decoder.Decode(&candidates); err != nil {
 		return nil, err
 	}
+	candidates.SortCandidates()
 	return candidates, nil
 }
 
@@ -61,9 +64,8 @@ func (c ByScore) Len() int           { return len(c) }
 func (c ByScore) Swap(i, j int)      { c[i], c[j] = c[j], c[i] }
 func (c ByScore) Less(i, j int) bool { return c[i].Score < c[j].Score }
 
-func (c *Candidates) SortCandidates(inRec *InRecord) {
+func (c *Candidates) SortCandidates() {
 	sort.Sort(sort.Reverse(ByScore(c.Candidates)))
-
 }
 
 func (c Candidates) GetScores() []float32 {
@@ -72,4 +74,20 @@ func (c Candidates) GetScores() []float32 {
 		scores = append(scores, c.Candidates[i].Score)
 	}
 	return scores
+}
+
+func (c *Candidates) GetBestMatchLocation() []string {
+	var bestMatch []string
+	c.SortCandidates()
+	if len(c.Candidates) > 0 && c.Candidates[0] != nil {
+		xVal := fmt.Sprintf("%.6f", c.Candidates[0].Location.X)
+		yVal := fmt.Sprintf("%.6f", c.Candidates[0].Location.Y)
+		matchedAddr := strings.ToUpper(c.Candidates[0].Address)
+		score := fmt.Sprintf("%.6f", c.Candidates[0].Score)
+
+		bestMatch = []string{xVal, yVal, matchedAddr, score}
+	} else {
+		bestMatch = []string{}
+	}
+	return bestMatch
 }

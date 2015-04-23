@@ -1,10 +1,13 @@
 package main
 
 import (
-	"fmt"
+	"encoding/csv"
+	// "fmt"
+	"io"
 	"io/ioutil"
 	"net/http"
 	"net/url"
+	"strings"
 )
 
 type Geocoder struct {
@@ -64,7 +67,7 @@ func (g Geocoder) Geocode() ([]byte, error) {
 	return data, nil
 }
 
-func (g Geocoder) GeocodeToCandidates() ([]byte, error) {
+func (g Geocoder) GeocodeToCandidates() ([]string, error) {
 
 	res, err := http.Get(g.URL.String())
 	defer res.Body.Close()
@@ -76,7 +79,47 @@ func (g Geocoder) GeocodeToCandidates() ([]byte, error) {
 	unmarshaler := JSONMarshaler{}
 	candidates, err := unmarshaler.UnmarshalAddresses(res.Body)
 
-	fmt.Println(candidates.Candidates)
+	bestMatch := candidates.GetBestMatchLocation()
 
-	return nil, nil
+	return bestMatch, nil
+}
+
+func UnmarshalAndGeocodeInRecords(reader *csv.Reader) (outRecords [][]string, err error) {
+
+	eof := false
+	for lino := 1; !eof; lino++ {
+		line, err := reader.Read()
+		if err == io.EOF {
+			err = nil
+			eof = true
+			return outRecords, nil
+		} else if err != nil {
+			return nil, err
+		}
+
+		parsedLine, err := ParseAndGeocodeInRecord(line)
+		outRecords = append(outRecords, parsedLine)
+	}
+
+	return outRecords, nil
+}
+
+func ParseAndGeocodeInRecord(line []string) ([]string, error) {
+
+	inRecord := &InRecord{}
+
+	inRecord.Address = strings.ToUpper(line[8])
+	inRecord.Zip = strings.ToUpper(line[9])
+
+	gc := NewGeocoder()
+	gc.SetUrlValues(inRecord)
+
+	xyVals, err := gc.GeocodeToCandidates()
+
+	if err != nil {
+		return nil, err
+	}
+
+	line = append(line, xyVals...)
+	return line, nil
 }
