@@ -147,7 +147,7 @@ SSO,City of Baltimore,N/A,1/18/2005,10:00:00 AM,0,1,0,4600 Franklintown Rd,21216
 	reader := csv.NewReader(strings.NewReader(csvStream))
 	reader.FieldsPerRecord = 22
 
-	data, err := UnmarshalInRecordsAppendXY(reader)
+	data, err := UnmarshalAndGeocodeInRecords(reader)
 	ok(t, err)
 
 	fmt.Println(data)

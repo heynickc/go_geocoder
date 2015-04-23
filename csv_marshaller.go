@@ -37,7 +37,7 @@ func UnmarshalInRecords(reader *csv.Reader) (inRecords []*InRecord, err error) {
 	return inRecords, nil
 }
 
-func UnmarshalInRecordsAppendXY(reader *csv.Reader) (inRecords []*InRecord, err error) {
+func UnmarshalAndGeocodeInRecords(reader *csv.Reader) (outRecords [][]string, err error) {
 
 	eof := false
 	for lino := 2; !eof; lino++ {
@@ -45,14 +45,14 @@ func UnmarshalInRecordsAppendXY(reader *csv.Reader) (inRecords []*InRecord, err 
 		if err == io.EOF {
 			err = nil
 			eof = true
-			return inRecords, nil
+			return outRecords, nil
 		} else if err != nil {
 			return nil, err
 		}
-		inRecords = append(inRecords, ParseInRecordAppendXY(line))
+		outRecords = append(outRecords, ParseAndGeocodeInRecord(line))
 	}
 
-	return inRecords, nil
+	return outRecords, nil
 }
 
 func ParseInRecord(line []string) (inRecord *InRecord) {
@@ -65,12 +65,17 @@ func ParseInRecord(line []string) (inRecord *InRecord) {
 	return inRecord
 }
 
-func ParseInRecordAppendXY(line []string) (inRecord *InRecord) {
+func ParseAndGeocodeInRecord(line []string) []string {
 
-	inRecord = &InRecord{}
+	inRecord := &InRecord{}
 
 	inRecord.Address = strings.ToUpper(line[8])
 	inRecord.Zip = strings.ToUpper(line[9])
 
-	return inRecord
+	gc := NewGeocoder()
+	gc.SetUrlValues(inRecord)
+	gCode := gc.Geocode()
+
+	line = append(line, string(gCode))
+	return line
 }
