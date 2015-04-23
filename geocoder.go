@@ -20,7 +20,7 @@ func NewGeocoder() *Geocoder {
 
 	u.Scheme = "http"
 	u.Host = "geodata.md.gov"
-	u.Path = "imap/rest/services/GeocodeServices/MD_CompositeLocatorWithZIPCodeCentroids/GeocodeServer/findAddressCandidates"
+	u.Path = "imap/rest/services/GeocodeServices/MD_CompositeLocator/GeocodeServer/findAddressCandidates"
 
 	v := url.Values{
 		"Street":       []string{"507 S Pinehurst Ave"},
@@ -43,7 +43,7 @@ func (g *Geocoder) SetUrlValues(address *InRecord) {
 
 	oldQuery := g.URL.Query()
 
-	oldQuery.Set("Street", address.Address)
+	oldQuery.Set("Street", strings.ToUpper(address.Address))
 	oldQuery.Set("ZIP", address.Zip)
 
 	g.URL.RawQuery = oldQuery.Encode()

@@ -17,6 +17,7 @@ func TestGeocoder(t *testing.T) {
 }
 
 func TestMakeUrlValues(t *testing.T) {
+	t.Skip()
 
 	inRec := &InRecord{"507 N PINEHURST AVE", "21801"}
 	gc := NewGeocoder()
