@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"io"
+	"sort"
 )
 
 type SpatialReference struct {
@@ -52,4 +53,23 @@ func (JSONMarshaler) UnmarshalAddresses(reader io.Reader) (*Candidates, error) {
 		return nil, err
 	}
 	return candidates, nil
+}
+
+type ByScore []*Address
+
+func (c ByScore) Len() int           { return len(c) }
+func (c ByScore) Swap(i, j int)      { c[i], c[j] = c[j], c[i] }
+func (c ByScore) Less(i, j int) bool { return c[i].Score < c[j].Score }
+
+func (c *Candidates) SortCandidates(inRec *InRecord) {
+	sort.Sort(sort.Reverse(ByScore(c.Candidates)))
+
+}
+
+func (c Candidates) GetScores() []float32 {
+	scores := []float32{}
+	for i := 0; i < len(c.Candidates); i++ {
+		scores = append(scores, c.Candidates[i].Score)
+	}
+	return scores
 }

@@ -1,8 +1,8 @@
 package main
 
 import (
+	"fmt"
 	"io/ioutil"
-	"log"
 	"net/http"
 	"net/url"
 )
@@ -46,17 +46,37 @@ func (g *Geocoder) SetUrlValues(address *InRecord) {
 	g.URL.RawQuery = oldQuery.Encode()
 }
 
-func (g Geocoder) Geocode() []byte {
+func (g Geocoder) Geocode() ([]byte, error) {
 
 	res, err := http.Get(g.URL.String())
+	defer res.Body.Close()
+
 	if err != nil {
-		log.Fatalf("Unable to get %q: %v", g.URL.String(), err)
+		return nil, err
 	}
 
 	data, err := ioutil.ReadAll(res.Body)
-	res.Body.Close()
+
 	if err != nil {
-		log.Fatalf("Error parsing response body: %v", err)
+		return nil, err
 	}
-	return data
+
+	return data, nil
+}
+
+func (g Geocoder) GeocodeToCandidates() ([]byte, error) {
+
+	res, err := http.Get(g.URL.String())
+	defer res.Body.Close()
+
+	if err != nil {
+		return nil, err
+	}
+
+	unmarshaler := JSONMarshaler{}
+	candidates, err := unmarshaler.UnmarshalAddresses(res.Body)
+
+	fmt.Println(candidates.Candidates)
+
+	return nil, nil
 }
