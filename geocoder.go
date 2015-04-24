@@ -2,7 +2,6 @@ package main
 
 import (
 	"encoding/csv"
-	"fmt"
 	"io"
 	"io/ioutil"
 	"net/http"
@@ -92,6 +91,11 @@ func UnmarshalAndGeocodeInRecords(reader *csv.Reader) error {
 	eof := false
 	for lino := 1; !eof; lino++ {
 		line, err := reader.Read()
+		if lino == 1 {
+			line = append(line, []string{"X", "Y", "AddressMatch", "MatchScore"}...)
+			outRecords = append(outRecords, line)
+			continue
+		}
 		if err == io.EOF {
 			err = nil
 			eof = true
@@ -104,10 +108,10 @@ func UnmarshalAndGeocodeInRecords(reader *csv.Reader) error {
 		outRecords = append(outRecords, parsedLine)
 	}
 
-	return OutputNewRecords(outRecords)
+	return outputNewRecords(outRecords)
 }
 
-func OutputNewRecords(newRecords [][]string) error {
+func outputNewRecords(newRecords [][]string) error {
 	writer, closer, err := createCsvFile("./output.csv")
 	if closer != nil {
 		defer closer()
@@ -117,10 +121,7 @@ func OutputNewRecords(newRecords [][]string) error {
 	}
 
 	csvWriter := csv.NewWriter(writer)
-
-	fmt.Println(newRecords)
-	csvWriter.WriteAll(newRecords)
-	return nil
+	return csvWriter.WriteAll(newRecords)
 }
 
 func createCsvFile(filename string) (io.WriteCloser, func(), error) {

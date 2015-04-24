@@ -2,7 +2,6 @@ package main
 
 import (
 	"encoding/json"
-	"fmt"
 	"io"
 	"log"
 	"reflect"
@@ -125,7 +124,6 @@ func TestCandidatesBestMatch(t *testing.T) {
 	candidates, err := unmarshaler.UnmarshalAddresses(strings.NewReader(jsonStream))
 	ok(t, err)
 
-	fmt.Println(candidates.GetScores())
 	candidates.SortCandidates()
 
 	sortedScores := candidates.GetScores()
