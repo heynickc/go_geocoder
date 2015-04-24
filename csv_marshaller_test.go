@@ -100,7 +100,7 @@ func TestUnmarshalInRecords(t *testing.T) {
 }
 
 func TestGeocodeInRecords(t *testing.T) {
-	t.Skip()
+	t.Skip("Just to see how to do this appropriately")
 
 	file, err := os.Open("./sso_db_raw.csv")
 	ok(t, err)

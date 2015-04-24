@@ -12,10 +12,10 @@ func main() {
 	app.Usage = "adds map coordinates to input csv file"
 	app.Version = "0.1.0"
 	app.Action = func(c *cli.Context) {
-		if len(c.Args()) != 3 {
-			log.Fatalf("usage: %s infile.ext outfile.ext\n")
+		if len(c.Args()) <= 2 {
+			log.Fatalf("usage: go_mdimapgeocoder.exe infile.csv outfile.csv\n")
 		}
-		inFileName, outFileName := c.Args()[1], c.Args()[2]
+		inFileName, outFileName := c.Args()[0], c.Args()[1]
 		if inFileName == outFileName {
 			log.Fatalln("won't overwrite a file with itself")
 		}
