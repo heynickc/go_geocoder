@@ -126,7 +126,7 @@ func TestGeocodeInRecords(t *testing.T) {
 }
 
 func TestCSVGeocodeMarshall(t *testing.T) {
-	t.Skip()
+	// t.Skip()
 
 	csvStream := `Overflow Type,Municipality/Facility,NPDES #,Date Discovered,Time Discovered,Days,Minutes,Hours,Location,Zip Code,Latitude,Longitude,Collection-System,Quantity in Gallons (Estimated),Net in Gallons (Estimated),Cause,Watershed,Receiving waters,County,Comments,Penalty Collected,Penalty Notes
 SSO,American Water Military Services,N/A,3/29/2011,4:45:00 PM,0,1,0,"8133B Lawson Loop, Fort Meade",20724,,,Fort Meade WWTP,89,89,Baby whips & debris,,Unknown,Anne Arundel,None,,
@@ -152,8 +152,15 @@ SSO,City of Baltimore,N/A,1/18/2005,10:00:00 AM,0,1,0,4600 Franklintown Rd,21216
 	reader := csv.NewReader(strings.NewReader(csvStream))
 	reader.FieldsPerRecord = 22
 
-	data, err := UnmarshalAndGeocodeInRecords(reader)
-	ok(t, err)
+	UnmarshalAndGeocodeInRecords(reader)
+}
 
-	fmt.Println(data)
+func TestCsvWriter(t *testing.T) {
+	// t.Skip()
+
+	testData := [][]string{[]string{"test2"}}
+	writer, err := os.Create("./test.csv")
+	ok(t, err)
+	csvWriter := csv.NewWriter(writer)
+	csvWriter.WriteAll(testData)
 }

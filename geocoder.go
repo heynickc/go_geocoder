@@ -7,6 +7,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"net/url"
+	"os"
 	"strings"
 )
 
@@ -84,7 +85,9 @@ func (g Geocoder) GeocodeToCandidates() ([]string, error) {
 	return bestMatch, nil
 }
 
-func UnmarshalAndGeocodeInRecords(reader *csv.Reader) (outRecords [][]string, err error) {
+func UnmarshalAndGeocodeInRecords(reader *csv.Reader) error {
+
+	var outRecords [][]string
 
 	eof := false
 	for lino := 1; !eof; lino++ {
@@ -92,16 +95,40 @@ func UnmarshalAndGeocodeInRecords(reader *csv.Reader) (outRecords [][]string, er
 		if err == io.EOF {
 			err = nil
 			eof = true
-			return outRecords, nil
+			continue
 		} else if err != nil {
-			return nil, err
+			return err
 		}
 
 		parsedLine, err := ParseAndGeocodeInRecord(line)
 		outRecords = append(outRecords, parsedLine)
 	}
 
-	return outRecords, nil
+	return OutputNewRecords(outRecords)
+}
+
+func OutputNewRecords(newRecords [][]string) error {
+	writer, closer, err := createCsvFile("./output.csv")
+	if closer != nil {
+		defer closer()
+	}
+	if err != nil {
+		return err
+	}
+
+	csvWriter := csv.NewWriter(writer)
+
+	return csvWriter.WriteAll(newRecords)
+}
+
+func createCsvFile(filename string) (io.WriteCloser, func(), error) {
+	file, err := os.Create(filename)
+	if err != nil {
+		return nil, nil, err
+	}
+	closer := func() { file.Close() }
+	var writer io.WriteCloser = file
+	return writer, closer, nil
 }
 
 func ParseAndGeocodeInRecord(line []string) ([]string, error) {
