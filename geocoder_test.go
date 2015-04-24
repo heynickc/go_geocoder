@@ -9,7 +9,7 @@ import (
 
 func TestGeocoder(t *testing.T) {
 
-	gc := NewGeocoder()
+	gc := NewGeocoder(false)
 
 	if reflect.TypeOf(gc).String() != "*main.Geocoder" {
 		t.Errorf("Type of gc is %v", reflect.TypeOf(gc).String())
@@ -20,7 +20,7 @@ func TestMakeUrlValues(t *testing.T) {
 	t.Skip()
 
 	inRec := &InRecord{"507 N PINEHURST AVE", "21801"}
-	gc := NewGeocoder()
+	gc := NewGeocoder(true)
 
 	gc.SetUrlValues(inRec)
 
@@ -54,5 +54,11 @@ SSO,City of Baltimore,N/A,1/18/2005,10:00:00 AM,0,1,0,4600 Franklintown Rd,21216
 	reader := csv.NewReader(strings.NewReader(csvStream))
 	reader.FieldsPerRecord = 22
 
-	UnmarshalAndGeocodeInRecords(reader)
+	UnmarshalAndGeocodeInRecords(reader, "./test_output.csv")
+}
+
+func TestGeocodeFile(t *testing.T) {
+
+	err := GeocodeFile("./sso_db_raw_sample.csv", "./test_output.csv")
+	ok(t, err)
 }

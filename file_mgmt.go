@@ -30,18 +30,7 @@ func openAddressDataFile(filename string) (io.ReadCloser, func(), error) {
 
 func readAddressData(reader io.Reader, suffix string) (*Candidates, error) {
 	var unmarshaler AddressUnmarshaler
-	switch suffix {
-	// case ".gob":
-	// 	unmarshaler = GobMarshaler{}
-	// case ".inv":
-	// 	unmarshaler = InvMarshaler{}
-	case ".jsn", ".json":
-		unmarshaler = JSONMarshaler{}
-		// case ".txt":
-		// 	unmarshaler = TxtMarshaler{}
-		// case ".xml":
-		// 	unmarshaler = XMLMarshaler{}
-	}
+	unmarshaler = JSONMarshaler{}
 	if unmarshaler != nil {
 		return unmarshaler.UnmarshalAddresses(reader)
 	}

@@ -10,23 +10,32 @@ import (
 	"strings"
 )
 
+const (
+	mdNoZipGeocoderUrl   = "MD_CompositeLocator"
+	mdWithZipGeocoderUrl = "MD_CompositeLocatorWithZIPCodeCentroids"
+)
+
 type Geocoder struct {
 	URL *url.URL
 }
 
-func NewGeocoder() *Geocoder {
+func NewGeocoder(withZips bool) *Geocoder {
 
 	u := new(url.URL)
 
 	u.Scheme = "http"
 	u.Host = "geodata.md.gov"
-	u.Path = "imap/rest/services/GeocodeServices/MD_CompositeLocator/GeocodeServer/findAddressCandidates"
+
+	if withZips {
+		u.Path = "imap/rest/services/GeocodeServices/" + mdWithZipGeocoderUrl + "/GeocodeServer/findAddressCandidates"
+	}
+	u.Path = "imap/rest/services/GeocodeServices/" + mdNoZipGeocoderUrl + "/GeocodeServer/findAddressCandidates"
 
 	v := url.Values{
-		"Street":       []string{"507 S Pinehurst Ave"},
+		"Street":       []string{""},
 		"City":         []string{""},
 		"State":        []string{"Maryland"},
-		"ZIP":          []string{"21801"},
+		"ZIP":          []string{""},
 		"SingleLine":   []string{""},
 		"outFields":    []string{""},
 		"maxLocations": []string{"United States"},
@@ -37,6 +46,21 @@ func NewGeocoder() *Geocoder {
 	u.RawQuery = v.Encode()
 
 	return &Geocoder{u}
+}
+
+func GeocodeFile(inFileName, outFileName string) error {
+
+	file, err := os.Open(inFileName)
+	defer file.Close()
+	if err != nil {
+		return err
+	}
+	reader := csv.NewReader(file)
+	err = UnmarshalAndGeocodeInRecords(reader, outFileName)
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 func (g *Geocoder) SetUrlValues(address *InRecord) {
@@ -84,7 +108,7 @@ func (g Geocoder) GeocodeToCandidates() ([]string, error) {
 	return bestMatch, nil
 }
 
-func UnmarshalAndGeocodeInRecords(reader *csv.Reader) error {
+func UnmarshalAndGeocodeInRecords(reader *csv.Reader, outFileName string) error {
 
 	var outRecords [][]string
 
@@ -108,11 +132,11 @@ func UnmarshalAndGeocodeInRecords(reader *csv.Reader) error {
 		outRecords = append(outRecords, parsedLine)
 	}
 
-	return outputNewRecords(outRecords)
+	return outputNewRecords(outRecords, outFileName)
 }
 
-func outputNewRecords(newRecords [][]string) error {
-	writer, closer, err := createCsvFile("./output.csv")
+func outputNewRecords(newRecords [][]string, outFileName string) error {
+	writer, closer, err := createCsvFile(outFileName)
 	if closer != nil {
 		defer closer()
 	}
@@ -141,7 +165,7 @@ func ParseAndGeocodeInRecord(line []string) ([]string, error) {
 	inRecord.Address = strings.ToUpper(line[8])
 	inRecord.Zip = strings.ToUpper(line[9])
 
-	gc := NewGeocoder()
+	gc := NewGeocoder(false)
 	gc.SetUrlValues(inRecord)
 
 	xyVals, err := gc.GeocodeToCandidates()

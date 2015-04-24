@@ -113,7 +113,7 @@ func TestGeocodeInRecords(t *testing.T) {
 	data, err := UnmarshalInRecords(reader)
 	ok(t, err)
 
-	gc := NewGeocoder()
+	gc := NewGeocoder(false)
 	for i := 0; i < 5; i++ {
 		gc.SetUrlValues(data[i])
 
