@@ -2,7 +2,7 @@ package main
 
 import (
 	"encoding/csv"
-	// "fmt"
+	"fmt"
 	"io"
 	"io/ioutil"
 	"net/http"
@@ -118,7 +118,9 @@ func OutputNewRecords(newRecords [][]string) error {
 
 	csvWriter := csv.NewWriter(writer)
 
-	return csvWriter.WriteAll(newRecords)
+	fmt.Println(newRecords)
+	csvWriter.WriteAll(newRecords)
+	return nil
 }
 
 func createCsvFile(filename string) (io.WriteCloser, func(), error) {

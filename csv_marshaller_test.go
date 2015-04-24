@@ -158,9 +158,10 @@ SSO,City of Baltimore,N/A,1/18/2005,10:00:00 AM,0,1,0,4600 Franklintown Rd,21216
 func TestCsvWriter(t *testing.T) {
 	// t.Skip()
 
-	testData := [][]string{[]string{"test2"}}
+	testData := [][]string{[]string{"test"}}
 	writer, err := os.Create("./test.csv")
 	ok(t, err)
 	csvWriter := csv.NewWriter(writer)
 	csvWriter.WriteAll(testData)
+	writer.Close()
 }
