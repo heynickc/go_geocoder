@@ -8,12 +8,12 @@ import (
 
 func main() {
 	app := cli.NewApp()
-	app.Name = "go_mdimapgeocoder"
+	app.Name = "go_geocoder"
 	app.Usage = "adds map coordinates to input csv file"
 	app.Version = "0.1.0"
 	app.Action = func(c *cli.Context) {
 		if len(c.Args()) < 2 {
-			log.Fatalf("usage: go_mdimapgeocoder.exe infile.csv outfile.csv\n")
+			log.Fatalf("usage: go_geocoder infile.csv outfile.csv\n")
 		}
 		inFileName, outFileName := c.Args()[0], c.Args()[1]
 		if inFileName == outFileName {
