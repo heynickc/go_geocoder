@@ -9,7 +9,7 @@ import (
 func main() {
 	app := cli.NewApp()
 	app.Name = "go_geocoder"
-	app.Usage = "adds map coordinates to input csv file"
+	app.Usage = "adds map coordinates to input csv file\nOSX: ./go_geocoder <infile> <outfile>\nWindows: go_geocoder.exe <infile> <outfile>"
 	app.Version = "0.1.0"
 	app.Action = func(c *cli.Context) {
 		if len(c.Args()) < 2 {
