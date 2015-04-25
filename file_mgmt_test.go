@@ -6,6 +6,7 @@ import (
 )
 
 func TestOpenDataFile(t *testing.T) {
+	t.Skip()
 
 	file, closer, err := openAddressDataFile("./my_address.json")
 	ok(t, err)

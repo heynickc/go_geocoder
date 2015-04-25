@@ -5,6 +5,7 @@ import (
 	"fmt"
 	// "io/ioutil"
 	// "io"
+	"github.com/mitchellh/ioprogress"
 	"os"
 	"sort"
 	"strings"
@@ -89,7 +90,18 @@ func TestUnmarshalInRecords(t *testing.T) {
 
 	defer file.Close()
 
-	reader := csv.NewReader(file)
+	fileStat, err := file.Stat()
+	ok(t, err)
+
+	fmt.Println(fileStat.Size())
+	// Create the progress reader
+	progressR := &ioprogress.Reader{
+		Reader: file,
+		Size:   fileStat.Size(),
+	}
+
+	reader := csv.NewReader(progressR)
+
 	ok(t, err)
 
 	// data, err := reader.Read()

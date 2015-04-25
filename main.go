@@ -17,11 +17,11 @@ func main() {
 		}
 		inFileName, outFileName := c.Args()[0], c.Args()[1]
 		if inFileName == outFileName {
-			log.Fatalln("won't overwrite a file with itself")
+			log.Fatalln("Can't overwrite a file with itself")
 		}
 		err := GeocodeFile(inFileName, outFileName)
 		if err != nil {
-			log.Fatalln("No can do.. bub: ", err)
+			log.Fatalln("Couldn't geocode file: ", err)
 		}
 	}
 	app.Run(os.Args)

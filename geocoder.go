@@ -2,12 +2,15 @@ package main
 
 import (
 	"encoding/csv"
+	"fmt"
+	"github.com/mitchellh/ioprogress"
 	"io"
 	"io/ioutil"
 	"net/http"
 	"net/url"
 	"os"
 	"strings"
+	"time"
 )
 
 const (
@@ -55,12 +58,36 @@ func GeocodeFile(inFileName, outFileName string) error {
 	if err != nil {
 		return err
 	}
-	reader := csv.NewReader(file)
+
+	fileStat, err := file.Stat()
+	if err != nil {
+		return err
+	}
+
+	progressR := &ioprogress.Reader{
+		Reader:       file,
+		Size:         fileStat.Size(),
+		DrawFunc:     DrawTerminalBar(os.Stdout),
+		DrawInterval: time.Microsecond,
+	}
+
+	reader := csv.NewReader(progressR)
 	err = UnmarshalAndGeocodeInRecords(reader, outFileName)
 	if err != nil {
 		return err
 	}
 	return nil
+}
+
+func DrawTerminalBar(w io.Writer) ioprogress.DrawFunc {
+	bar := ioprogress.DrawTextFormatBar(20)
+	return ioprogress.DrawTerminalf(w, func(progress, total int64) string {
+		return fmt.Sprintf(
+			"%s %s",
+			bar(progress, total),
+			ioprogress.DrawTextFormatBytes(progress, total))
+
+	})
 }
 
 func (g *Geocoder) SetUrlValues(address *InRecord) {
