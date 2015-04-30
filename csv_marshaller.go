@@ -2,7 +2,6 @@ package main
 
 import (
 	"encoding/csv"
-	// "fmt"
 	"io"
 	"strings"
 )
@@ -19,7 +18,7 @@ type InRecord struct {
 	Zip     string
 }
 
-func UnmarshalInRecords(reader *csv.Reader) (inRecords []*InRecord, err error) {
+func unmarshalInRecords(reader *csv.Reader) (inRecords []*InRecord, err error) {
 
 	eof := false
 	for lino := 2; !eof; lino++ {
@@ -31,13 +30,13 @@ func UnmarshalInRecords(reader *csv.Reader) (inRecords []*InRecord, err error) {
 		} else if err != nil {
 			return nil, err
 		}
-		inRecords = append(inRecords, ParseInRecord(line))
+		inRecords = append(inRecords, parseInRecord(line))
 	}
 
 	return inRecords, nil
 }
 
-func ParseInRecord(line []string) (inRecord *InRecord) {
+func parseInRecord(line []string) (inRecord *InRecord) {
 
 	inRecord = &InRecord{}
 

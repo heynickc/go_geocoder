@@ -67,19 +67,19 @@ func GeocodeFile(inFileName, outFileName string) error {
 	progressR := &ioprogress.Reader{
 		Reader:       file,
 		Size:         fileStat.Size(),
-		DrawFunc:     DrawTerminalBar(os.Stdout),
+		DrawFunc:     drawTerminalBar(os.Stdout),
 		DrawInterval: time.Microsecond,
 	}
 
 	reader := csv.NewReader(progressR)
-	err = UnmarshalAndGeocodeInRecords(reader, outFileName)
+	err = unmarshalAndGeocodeInRecords(reader, outFileName)
 	if err != nil {
 		return err
 	}
 	return nil
 }
 
-func DrawTerminalBar(w io.Writer) ioprogress.DrawFunc {
+func drawTerminalBar(w io.Writer) ioprogress.DrawFunc {
 	bar := ioprogress.DrawTextFormatBar(20)
 	return ioprogress.DrawTerminalf(w, func(progress, total int64) string {
 		return fmt.Sprintf(
@@ -90,7 +90,7 @@ func DrawTerminalBar(w io.Writer) ioprogress.DrawFunc {
 	})
 }
 
-func (g *Geocoder) SetUrlValues(address *InRecord) {
+func (g *Geocoder) setUrlValues(address *InRecord) {
 
 	oldQuery := g.URL.Query()
 
@@ -118,7 +118,7 @@ func (g Geocoder) Geocode() ([]byte, error) {
 	return data, nil
 }
 
-func (g Geocoder) GeocodeToCandidates() ([]string, error) {
+func (g Geocoder) geocodeToCandidates() ([]string, error) {
 
 	res, err := http.Get(g.URL.String())
 	defer res.Body.Close()
@@ -135,7 +135,7 @@ func (g Geocoder) GeocodeToCandidates() ([]string, error) {
 	return bestMatch, nil
 }
 
-func UnmarshalAndGeocodeInRecords(reader *csv.Reader, outFileName string) error {
+func unmarshalAndGeocodeInRecords(reader *csv.Reader, outFileName string) error {
 
 	var outRecords [][]string
 
@@ -155,7 +155,7 @@ func UnmarshalAndGeocodeInRecords(reader *csv.Reader, outFileName string) error 
 			return err
 		}
 
-		parsedLine, err := ParseAndGeocodeInRecord(line)
+		parsedLine, err := parseAndGeocodeInRecord(line)
 		outRecords = append(outRecords, parsedLine)
 	}
 
@@ -175,17 +175,7 @@ func outputNewRecords(newRecords [][]string, outFileName string) error {
 	return csvWriter.WriteAll(newRecords)
 }
 
-func createCsvFile(filename string) (io.WriteCloser, func(), error) {
-	file, err := os.Create(filename)
-	if err != nil {
-		return nil, nil, err
-	}
-	closer := func() { file.Close() }
-	var writer io.WriteCloser = file
-	return writer, closer, nil
-}
-
-func ParseAndGeocodeInRecord(line []string) ([]string, error) {
+func parseAndGeocodeInRecord(line []string) ([]string, error) {
 
 	inRecord := &InRecord{}
 
@@ -193,9 +183,9 @@ func ParseAndGeocodeInRecord(line []string) ([]string, error) {
 	inRecord.Zip = strings.ToUpper(line[9])
 
 	gc := NewGeocoder(false)
-	gc.SetUrlValues(inRecord)
+	gc.setUrlValues(inRecord)
 
-	xyVals, err := gc.GeocodeToCandidates()
+	xyVals, err := gc.geocodeToCandidates()
 
 	if err != nil {
 		return nil, err

@@ -17,14 +17,13 @@ func TestGeocoder(t *testing.T) {
 }
 
 func TestMakeUrlValues(t *testing.T) {
-	t.Skip()
 
 	inRec := &InRecord{"507 N PINEHURST AVE", "21801"}
 	gc := NewGeocoder(true)
 
-	gc.SetUrlValues(inRec)
+	gc.setUrlValues(inRec)
 
-	equals(t, "http://geodata.md.gov/imap/rest/services/GeocodeServices/MD_CompositeLocatorWithZIPCodeCentroids/GeocodeServer/findAddressCandidates?City=&SingleLine=&State=Maryland&Street=507+N+PINEHURST+AVE&ZIP=21801&f=json&maxLocations=United+States&outFields=&outSR=4326&searchExtent=", gc.URL.String())
+	equals(t, "http://geodata.md.gov/imap/rest/services/GeocodeServices/MD_CompositeLocator/GeocodeServer/findAddressCandidates?City=&SingleLine=&State=Maryland&Street=507+N+PINEHURST+AVE&ZIP=21801&f=json&maxLocations=United+States&outFields=&outSR=4326&searchExtent=", gc.URL.String())
 }
 
 func TestCSVGeocodeMarshall(t *testing.T) {
@@ -54,7 +53,7 @@ SSO,City of Baltimore,N/A,1/18/2005,10:00:00 AM,0,1,0,4600 Franklintown Rd,21216
 	reader := csv.NewReader(strings.NewReader(csvStream))
 	reader.FieldsPerRecord = 22
 
-	UnmarshalAndGeocodeInRecords(reader, "./test_output.csv")
+	unmarshalAndGeocodeInRecords(reader, "./test_output.csv")
 }
 
 func TestGeocodeFile(t *testing.T) {

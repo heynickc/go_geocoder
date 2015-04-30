@@ -3,8 +3,6 @@ package main
 import (
 	"encoding/csv"
 	"fmt"
-	// "io/ioutil"
-	// "io"
 	"github.com/mitchellh/ioprogress"
 	"os"
 	"sort"
@@ -105,7 +103,7 @@ func TestUnmarshalInRecords(t *testing.T) {
 	ok(t, err)
 
 	// data, err := reader.Read()
-	data, err := UnmarshalInRecords(reader)
+	data, err := unmarshalInRecords(reader)
 	ok(t, err)
 
 	equals(t, 3758, len(data))
@@ -122,12 +120,12 @@ func TestGeocodeInRecords(t *testing.T) {
 	reader := csv.NewReader(file)
 	ok(t, err)
 
-	data, err := UnmarshalInRecords(reader)
+	data, err := unmarshalInRecords(reader)
 	ok(t, err)
 
 	gc := NewGeocoder(false)
 	for i := 0; i < 5; i++ {
-		gc.SetUrlValues(data[i])
+		gc.setUrlValues(data[i])
 
 		fmt.Println(data[i].Address)
 		parsedData, err := gc.Geocode()

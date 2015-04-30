@@ -37,6 +37,16 @@ func readAddressData(reader io.Reader, suffix string) (*Candidates, error) {
 	return nil, fmt.Errorf("unrecognized input suffix: %s", suffix)
 }
 
+func createCsvFile(filename string) (io.WriteCloser, func(), error) {
+	file, err := os.Create(filename)
+	if err != nil {
+		return nil, nil, err
+	}
+	closer := func() { file.Close() }
+	var writer io.WriteCloser = file
+	return writer, closer, nil
+}
+
 func suffixOf(filename string) string {
 	suffix := filepath.Ext(filename)
 	if suffix == ".gz" {
