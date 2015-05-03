@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"github.com/mitchellh/ioprogress"
 	"io"
-	"io/ioutil"
 	"net/http"
 	"net/url"
 	"os"
@@ -98,24 +97,6 @@ func (g *Geocoder) setUrlValues(address *InRecord) {
 	oldQuery.Set("ZIP", address.Zip)
 
 	g.URL.RawQuery = oldQuery.Encode()
-}
-
-func (g Geocoder) Geocode() ([]byte, error) {
-
-	res, err := http.Get(g.URL.String())
-	defer res.Body.Close()
-
-	if err != nil {
-		return nil, err
-	}
-
-	data, err := ioutil.ReadAll(res.Body)
-
-	if err != nil {
-		return nil, err
-	}
-
-	return data, nil
 }
 
 func (g Geocoder) geocodeToCandidates() ([]string, error) {
