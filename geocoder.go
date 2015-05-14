@@ -3,18 +3,19 @@ package main
 import (
 	"encoding/csv"
 	"fmt"
-	"github.com/mitchellh/ioprogress"
 	"io"
 	"net/http"
 	"net/url"
 	"os"
 	"strings"
 	"time"
+
+	"github.com/mitchellh/ioprogress"
 )
 
 const (
-	mdNoZipGeocoderUrl   = "MD_CompositeLocator"
-	mdWithZipGeocoderUrl = "MD_CompositeLocatorWithZIPCodeCentroids"
+	mdNoZipGeocoderURL   = "MD_CompositeLocator"
+	mdWithZipGeocoderURL = "MD_CompositeLocatorWithZIPCodeCentroids"
 )
 
 type Geocoder struct {
@@ -29,9 +30,9 @@ func NewGeocoder(withZips bool) *Geocoder {
 	u.Host = "geodata.md.gov"
 
 	if withZips {
-		u.Path = "imap/rest/services/GeocodeServices/" + mdWithZipGeocoderUrl + "/GeocodeServer/findAddressCandidates"
+		u.Path = "imap/rest/services/GeocodeServices/" + mdWithZipGeocoderURL + "/GeocodeServer/findAddressCandidates"
 	}
-	u.Path = "imap/rest/services/GeocodeServices/" + mdNoZipGeocoderUrl + "/GeocodeServer/findAddressCandidates"
+	u.Path = "imap/rest/services/GeocodeServices/" + mdNoZipGeocoderURL + "/GeocodeServer/findAddressCandidates"
 
 	v := url.Values{
 		"Street":       []string{""},
@@ -89,7 +90,7 @@ func drawTerminalBar(w io.Writer) ioprogress.DrawFunc {
 	})
 }
 
-func (g *Geocoder) setUrlValues(address *InRecord) {
+func (g *Geocoder) SetURLValues(address *InRecord) {
 
 	oldQuery := g.URL.Query()
 
@@ -164,7 +165,7 @@ func parseAndGeocodeInRecord(line []string) ([]string, error) {
 	inRecord.Zip = strings.ToUpper(line[9])
 
 	gc := NewGeocoder(false)
-	gc.setUrlValues(inRecord)
+	gc.SetURLValues(inRecord)
 
 	xyVals, err := gc.geocodeToCandidates()
 

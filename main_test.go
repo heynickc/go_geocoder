@@ -6,12 +6,12 @@ import (
 	"testing"
 )
 
-type TestPairUrl struct {
+type TestPairURL struct {
 	In  string
 	Out map[string]string
 }
 
-var TestPairsUrl = []TestPairUrl{TestPairUrl{"http://geodata.md.gov/imap/rest/services/GeocodeServices/MD_CompositeLocatorWithZIPCodeCentroids/GeocodeServer/findAddressCandidates?Street=507+S+Pinehurst+Ave&City=Salisbury&State=Maryland&ZIP=21801&SingleLine=&outFields=&maxLocations=United+States&outSR=4326&searchExtent=&f=pjson",
+var TestPairsURL = []TestPairURL{TestPairURL{"http://geodata.md.gov/imap/rest/services/GeocodeServices/MD_CompositeLocatorWithZIPCodeCentroids/GeocodeServer/findAddressCandidates?Street=507+S+Pinehurst+Ave&City=Salisbury&State=Maryland&ZIP=21801&SingleLine=&outFields=&maxLocations=United+States&outSR=4326&searchExtent=&f=pjson",
 	map[string]string{
 		"Scheme":   "http",
 		"Host":     "geodata.md.gov",
@@ -21,22 +21,22 @@ var TestPairsUrl = []TestPairUrl{TestPairUrl{"http://geodata.md.gov/imap/rest/se
 
 func TestNewUrl(t *testing.T) {
 
-	result, err := url.Parse(TestPairsUrl[0].In)
+	result, err := url.Parse(TestPairsURL[0].In)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	if result.Scheme != TestPairsUrl[0].Out["Scheme"] {
-		t.Errorf("Expected %v, but got %v", result.Scheme, TestPairsUrl[0].Out["Scheme"])
+	if result.Scheme != TestPairsURL[0].Out["Scheme"] {
+		t.Errorf("Expected %v, but got %v", result.Scheme, TestPairsURL[0].Out["Scheme"])
 	}
-	if result.Host != TestPairsUrl[0].Out["Host"] {
-		t.Errorf("Expected %v, but got %v", result.Host, TestPairsUrl[0].Out["Host"])
+	if result.Host != TestPairsURL[0].Out["Host"] {
+		t.Errorf("Expected %v, but got %v", result.Host, TestPairsURL[0].Out["Host"])
 	}
-	if result.Path != TestPairsUrl[0].Out["Path"] {
-		t.Errorf("Expected %v, but got %v", result.Path, TestPairsUrl[0].Out["Path"])
+	if result.Path != TestPairsURL[0].Out["Path"] {
+		t.Errorf("Expected %v, but got %v", result.Path, TestPairsURL[0].Out["Path"])
 	}
-	if result.RawQuery != TestPairsUrl[0].Out["RawQuery"] {
-		t.Errorf("Expected %v, but got %v", result.RawQuery, TestPairsUrl[0].Out["RawQuery"])
+	if result.RawQuery != TestPairsURL[0].Out["RawQuery"] {
+		t.Errorf("Expected %v, but got %v", result.RawQuery, TestPairsURL[0].Out["RawQuery"])
 	}
 }
 

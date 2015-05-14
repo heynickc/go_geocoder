@@ -3,9 +3,10 @@ package main
 import (
 	"encoding/csv"
 	"fmt"
-	"github.com/mitchellh/ioprogress"
 	"os"
 	"testing"
+
+	"github.com/mitchellh/ioprogress"
 )
 
 type InAddress struct {
@@ -14,7 +15,7 @@ type InAddress struct {
 }
 
 func TestOpenCSVFile(t *testing.T) {
-	file, err := os.Open("./sso_db_raw.csv")
+	file, err := os.Open("./sso_db_raw_sample.csv")
 	ok(t, err)
 
 	defer file.Close()
@@ -25,11 +26,11 @@ func TestOpenCSVFile(t *testing.T) {
 	data, err := reader.ReadAll()
 	ok(t, err)
 
-	equals(t, 3758, len(data))
+	equals(t, 20, len(data))
 }
 
 func TestUnmarshalInRecords(t *testing.T) {
-	file, err := os.Open("./sso_db_raw.csv")
+	file, err := os.Open("./sso_db_raw_sample.csv")
 	ok(t, err)
 
 	defer file.Close()
@@ -51,7 +52,7 @@ func TestUnmarshalInRecords(t *testing.T) {
 	data, err := unmarshalInRecords(reader)
 	ok(t, err)
 
-	equals(t, 3758, len(data))
+	equals(t, 20, len(data))
 }
 
 func TestCsvWriter(t *testing.T) {

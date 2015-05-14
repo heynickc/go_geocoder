@@ -21,7 +21,7 @@ func TestMakeUrlValues(t *testing.T) {
 	inRec := &InRecord{"507 N PINEHURST AVE", "21801"}
 	gc := NewGeocoder(true)
 
-	gc.setUrlValues(inRec)
+	gc.SetURLValues(inRec)
 
 	equals(t, "http://geodata.md.gov/imap/rest/services/GeocodeServices/MD_CompositeLocator/GeocodeServer/findAddressCandidates?City=&SingleLine=&State=Maryland&Street=507+N+PINEHURST+AVE&ZIP=21801&f=json&maxLocations=United+States&outFields=&outSR=4326&searchExtent=", gc.URL.String())
 }
