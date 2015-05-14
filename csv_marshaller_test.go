@@ -5,11 +5,12 @@ import (
 	"fmt"
 	// "io/ioutil"
 	// "io"
-	"github.com/mitchellh/ioprogress"
 	"os"
 	"sort"
 	"strings"
 	"testing"
+
+	"github.com/mitchellh/ioprogress"
 )
 
 type InAddress struct {
@@ -70,7 +71,7 @@ SSO,City of Baltimore,N/A,1/2/05,10:00:00 PM,0,1,0,1800 Park Ave,21217,,,Patapsc
 }
 
 func TestOpenCSVFile(t *testing.T) {
-	file, err := os.Open("./sso_db_raw.csv")
+	file, err := os.Open("./sso_db_raw_sample.csv")
 	ok(t, err)
 
 	defer file.Close()
@@ -81,11 +82,11 @@ func TestOpenCSVFile(t *testing.T) {
 	data, err := reader.ReadAll()
 	ok(t, err)
 
-	equals(t, 3758, len(data))
+	equals(t, 20, len(data))
 }
 
 func TestUnmarshalInRecords(t *testing.T) {
-	file, err := os.Open("./sso_db_raw.csv")
+	file, err := os.Open("./sso_db_raw_sample.csv")
 	ok(t, err)
 
 	defer file.Close()
@@ -108,13 +109,13 @@ func TestUnmarshalInRecords(t *testing.T) {
 	data, err := UnmarshalInRecords(reader)
 	ok(t, err)
 
-	equals(t, 3758, len(data))
+	equals(t, 20, len(data))
 }
 
 func TestGeocodeInRecords(t *testing.T) {
 	t.Skip("Just to see how to do this appropriately")
 
-	file, err := os.Open("./sso_db_raw.csv")
+	file, err := os.Open("./sso_db_raw_sample.csv")
 	ok(t, err)
 
 	defer file.Close()
@@ -127,7 +128,7 @@ func TestGeocodeInRecords(t *testing.T) {
 
 	gc := NewGeocoder(false)
 	for i := 0; i < 5; i++ {
-		gc.SetUrlValues(data[i])
+		gc.SetURLValues(data[i])
 
 		fmt.Println(data[i].Address)
 		parsedData, err := gc.Geocode()
