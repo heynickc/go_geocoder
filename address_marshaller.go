@@ -32,12 +32,32 @@ type Location struct {
 	Y float32
 }
 
+type GeocodeResp struct {
+	SpatialReference struct {
+		Wkid       int
+		LatestWkId int
+	}
+	Candidates []struct {
+		Address struct {
+			Location struct {
+				X float32
+				Y float32
+			}
+			Score float32
+		}
+	}
+}
+
 type AddressMarshaler interface {
 	MarshalAddresses(writer io.Writer, candidates Candidates) error
 }
 
 type AddressUnmarshaler interface {
 	UnmarshalAddresses(reader io.Reader) (*Candidates, error)
+}
+
+type GeocodeRespMarshaler interface {
+	MarshalAddresses(writer io.Writer, geocodeResp GeocodeResp) error
 }
 
 type JSONMarshaler struct{}
