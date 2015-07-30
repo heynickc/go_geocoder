@@ -60,7 +60,12 @@ type GeocodeRespMarshaler interface {
 	MarshalAddresses(writer io.Writer, geocodeResp GeocodeResp) error
 }
 
+type GeocodeRespUnmarshaler interface {
+	UnmarshalAddresses(reader io.Reader) (*GeocodeResp, error)
+}
+
 type JSONMarshaler struct{}
+type JSONGeocodeRespMarshaler struct{}
 
 func (JSONMarshaler) MarshalAddresses(writer io.Writer,
 	candidates Candidates) error {
@@ -76,6 +81,20 @@ func (JSONMarshaler) UnmarshalAddresses(reader io.Reader) (*Candidates, error) {
 	}
 	candidates.SortCandidates()
 	return candidates, nil
+}
+
+func (JSONGeocodeRespMarshaler) MarshalAddresses(writer io.Writer, gr GeocodeResp) error {
+	encoder := json.NewEncoder(writer)
+	return encoder.Encode(gr)
+}
+
+func (JSONGeocodeRespMarshaler) UnmarshalAddresses(reader io.Reader) (*GeocodeResp, error) {
+	decoder := json.NewDecoder(reader)
+	var gr *GeocodeResp
+	if err := decoder.Decode(&gr); err != nil {
+		return nil, err
+	}
+	return gr, nil
 }
 
 type ByScore []*Address
