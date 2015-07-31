@@ -42,12 +42,8 @@ func TestJSONMultipleResponsesIntoSingleGeocodeResponse(t *testing.T) {
 		} else if err != nil {
 			log.Fatal(err)
 		}
-		// equals(t, "*main.GeocodeResp", reflect.TypeOf(gr).String())
-		// equals(t, 2, len(gr.Candidates))
-
-		// for i := 0; i < len(gr.Candidates); i++ {
-		// 	equals(t, 10, len(gr.Candidates))
-		// }
+		equals(t, "[]*main.GeocodeResp", reflect.TypeOf(gr).String())
+		equals(t, 10, len(gr[0].Candidates))
 	}
 }
 
