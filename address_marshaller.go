@@ -38,13 +38,12 @@ type GeocodeResp struct {
 		LatestWkId int
 	}
 	Candidates []struct {
-		Address struct {
-			Location struct {
-				X float32
-				Y float32
-			}
-			Score float32
+		Address  string
+		Location struct {
+			X float32
+			Y float32
 		}
+		Score float32
 	}
 }
 
