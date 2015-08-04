@@ -87,7 +87,7 @@ func (JSONGeocodeRespMarshaler) MarshalAddresses(writer io.Writer, gr GeocodeRes
 	return encoder.Encode(gr)
 }
 
-func (JSONGeocodeRespMarshaler) UnmarshalAddresses(reader io.Reader) (*GeocodeResp, error) {
+func (JSONGeocodeRespMarshaler) UnmarshalAddresses(reader io.Reader) ([]*GeocodeResp, error) {
 	decoder := json.NewDecoder(reader)
 	var gr []*GeocodeResp
 	if err := decoder.Decode(&gr); err != nil {
