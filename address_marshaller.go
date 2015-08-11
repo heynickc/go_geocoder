@@ -23,28 +23,11 @@ type Candidates struct {
 
 type Address struct {
 	Address  string
-	Location Location
-	Score    float32
-}
-
-type Location struct {
-	X float32
-	Y float32
-}
-
-type GeocodeResp struct {
-	SpatialReference struct {
-		Wkid       int
-		LatestWkId int
+	Location struct {
+		X float32
+		Y float32
 	}
-	Candidates []struct {
-		Address  string
-		Location struct {
-			X float32
-			Y float32
-		}
-		Score float32
-	}
+	Score float32
 }
 
 type AddressMarshaler interface {
@@ -55,16 +38,7 @@ type AddressUnmarshaler interface {
 	UnmarshalAddresses(reader io.Reader) (*Candidates, error)
 }
 
-type GeocodeRespMarshaler interface {
-	MarshalAddresses(writer io.Writer, geocodeResp GeocodeResp) error
-}
-
-type GeocodeRespUnmarshaler interface {
-	UnmarshalAddresses(reader io.Reader) (*GeocodeResp, error)
-}
-
 type JSONMarshaler struct{}
-type JSONGeocodeRespMarshaler struct{}
 
 func (JSONMarshaler) MarshalAddresses(writer io.Writer,
 	candidates Candidates) error {
@@ -82,20 +56,6 @@ func (JSONMarshaler) UnmarshalAddresses(reader io.Reader) (*Candidates, error) {
 	return candidates, nil
 }
 
-func (JSONGeocodeRespMarshaler) MarshalAddresses(writer io.Writer, gr GeocodeResp) error {
-	encoder := json.NewEncoder(writer)
-	return encoder.Encode(gr)
-}
-
-func (JSONGeocodeRespMarshaler) UnmarshalAddresses(reader io.Reader) ([]*GeocodeResp, error) {
-	decoder := json.NewDecoder(reader)
-	var gr []*GeocodeResp
-	if err := decoder.Decode(&gr); err != nil {
-		return nil, err
-	}
-	return gr, nil
-}
-
 type ByScore []*Address
 
 func (c ByScore) Len() int           { return len(c) }
@@ -104,14 +64,6 @@ func (c ByScore) Less(i, j int) bool { return c[i].Score < c[j].Score }
 
 func (c *Candidates) SortCandidates() {
 	sort.Sort(sort.Reverse(ByScore(c.Candidates)))
-}
-
-func (c Candidates) GetScores() []float32 {
-	scores := []float32{}
-	for i := 0; i < len(c.Candidates); i++ {
-		scores = append(scores, c.Candidates[i].Score)
-	}
-	return scores
 }
 
 func (c *Candidates) GetBestMatchLocation() []string {
