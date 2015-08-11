@@ -29,5 +29,5 @@ func TestGetBestCandidate(t *testing.T) {
 	bestCandidate := result.GetBestCandidate()
 
 	equals(t, "507 S PINEHURST AVE, SALISBURY, MD, 21801", bestCandidate.Address)
-	equals(t, 100.00, bestCandidate.Score)
+	equals(t, float32(100.00), bestCandidate.Score)
 }
