@@ -27,5 +27,9 @@ func (c ByCandidateScore) Less(i, j int) bool { return c[i].Score < c[j].Score }
 
 func (g GeocodeResp) GetBestCandidate() *Candidate {
 	sort.Sort(ByCandidateScore(g.Candidates))
-	return g.Candidates[len(g.Candidates)-1]
+	if len(g.Candidates) > 0 {
+		return g.Candidates[len(g.Candidates)-1]
+	} else {
+		return &Candidate{}
+	}
 }
