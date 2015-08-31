@@ -11,6 +11,10 @@ const (
 	mdWithZipGeocoderURL = "MD_CompositeLocatorWithZIPCodeCentroids"
 )
 
+type IGeocoder interface {
+	Geocode(address string) string
+}
+
 type Geocoder struct {
 	URL *url.URL
 }
