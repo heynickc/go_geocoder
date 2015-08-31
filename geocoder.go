@@ -4,52 +4,13 @@ import (
 	"encoding/csv"
 	"fmt"
 	"io"
-	"net/http"
-	"net/url"
 	"os"
 	"strings"
 	"time"
 
+	"github.com/heynickc/go_geocoder/geocoder"
 	"github.com/mitchellh/ioprogress"
 )
-
-const (
-	mdNoZipGeocoderURL   = "MD_CompositeLocator"
-	mdWithZipGeocoderURL = "MD_CompositeLocatorWithZIPCodeCentroids"
-)
-
-type Geocoder struct {
-	URL *url.URL
-}
-
-func NewGeocoder(withZips bool) *Geocoder {
-
-	u := new(url.URL)
-
-	u.Scheme = "http"
-	u.Host = "geodata.md.gov"
-
-	if withZips {
-		u.Path = "imap/rest/services/GeocodeServices/" + mdWithZipGeocoderURL + "/GeocodeServer/findAddressCandidates"
-	}
-	u.Path = "imap/rest/services/GeocodeServices/" + mdNoZipGeocoderURL + "/GeocodeServer/findAddressCandidates"
-
-	v := url.Values{
-		"Street":       []string{""},
-		"City":         []string{""},
-		"State":        []string{"Maryland"},
-		"ZIP":          []string{""},
-		"SingleLine":   []string{""},
-		"outFields":    []string{""},
-		"maxLocations": []string{"United States"},
-		"outSR":        []string{"4326"},
-		"searchExtent": []string{""},
-		"f":            []string{"json"},
-	}
-	u.RawQuery = v.Encode()
-
-	return &Geocoder{u}
-}
 
 func GeocodeFile(inFileName, outFileName string) error {
 
@@ -88,33 +49,6 @@ func drawTerminalBar(w io.Writer) ioprogress.DrawFunc {
 			ioprogress.DrawTextFormatBytes(progress, total))
 
 	})
-}
-
-func (g *Geocoder) SetURLValues(address *InRecord) {
-
-	oldQuery := g.URL.Query()
-
-	oldQuery.Set("Street", strings.ToUpper(address.Address))
-	oldQuery.Set("ZIP", address.Zip)
-
-	g.URL.RawQuery = oldQuery.Encode()
-}
-
-func (g Geocoder) geocodeToCandidates() ([]string, error) {
-
-	res, err := http.Get(g.URL.String())
-	defer res.Body.Close()
-
-	if err != nil {
-		return nil, err
-	}
-
-	unmarshaler := JSONMarshaler{}
-	candidates, err := unmarshaler.UnmarshalAddresses(res.Body)
-
-	bestMatch := candidates.GetBestMatchLocation()
-
-	return bestMatch, nil
 }
 
 func unmarshalAndGeocodeInRecords(reader *csv.Reader, outFileName string) error {
@@ -164,7 +98,7 @@ func parseAndGeocodeInRecord(line []string) ([]string, error) {
 	inRecord.Address = strings.ToUpper(line[8])
 	inRecord.Zip = strings.ToUpper(line[9])
 
-	gc := NewGeocoder(false)
+	gc := geocoder.NewGeocoder(false)
 	gc.SetURLValues(inRecord)
 
 	xyVals, err := gc.geocodeToCandidates()

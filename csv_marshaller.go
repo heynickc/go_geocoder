@@ -13,11 +13,6 @@ type Aliases struct {
 	ZIP    []string
 }
 
-type InRecord struct {
-	Address string
-	Zip     string
-}
-
 func unmarshalInRecords(reader *csv.Reader) (inRecords []*InRecord, err error) {
 
 	eof := false
